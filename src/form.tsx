@@ -5,6 +5,7 @@ import {
   confirmAlert,
   Form,
   getFrontmostApplication,
+  Icon,
   List,
   showToast,
   Toast,
@@ -20,7 +21,7 @@ import { captureTarget, play, Target } from "./play";
 const failure = (message: string) =>
   showToast({
     style: Toast.Style.Failure,
-    title: "Macro operation stopped",
+    title: "Could Not Complete Action",
     message,
   });
 
@@ -78,7 +79,8 @@ function Editor({
         value={name}
         onChange={setName}
         onBlur={() => setNameTouched(true)}
-        placeholder="A name without secrets"
+        placeholder="Work login"
+        info="Names appear in the list. Keep secrets in Text."
         storeValue={false}
         error={
           nameTouched && (!name.trim() || name.length > 80)
@@ -106,23 +108,24 @@ function Editor({
       <Form.Checkbox
         id="mask"
         label="Mask text"
+        info="Hides text in this editor only."
         value={mask}
         onChange={setMask}
         storeValue={false}
       />
       <Form.Checkbox
         id="interpret"
-        label="Interpret macro tokens"
+        label="Use key commands"
+        info="Commands: [enter], [tab], [escape], [backspace], [ctrl+a], [shift+tab], [wait:500]. Use \\ before literal brackets or backslashes. No raw newlines or tabs."
         value={interpret}
         onChange={setInterpret}
         storeValue={false}
       />
-      <Form.Description text="Macros are saved in Raycast’s encrypted local database. Masking only hides this field; it does not protect memory. Use a name that contains no secrets." />
       <Form.Description
         text={
           interpret
-            ? "Tokens: [enter] [tab] [escape] [backspace] [ctrl+a] [shift+tab] [wait:500]. Escape literal brackets and backslashes with backslash. Raw newlines are rejected."
-            : "Literal text: brackets and backslashes stay unchanged. Printable US/ABC ASCII only, 1–2000 characters. No automatic Enter."
+            ? "hello[tab]world types hello, presses Tab, then types world. Only enable key commands when you want special keys, not literal text."
+            : "Types text exactly as entered, including brackets and backslashes. Use 1–2000 printable US/ABC ASCII characters. Enter is never added automatically."
         }
       />
     </Form>
@@ -174,6 +177,7 @@ export default function Entry() {
   const create = (
     <Action
       title="Create Macro"
+      icon={Icon.Plus}
       onAction={() => {
         if (!lock.current) push(<Editor refresh={refresh} />);
       }}
@@ -186,27 +190,52 @@ export default function Entry() {
       searchBarPlaceholder="Search macro names…"
       actions={
         <ActionPanel>
-          {error ? <Action title="Retry Loading" onAction={refresh} /> : create}
+          {error ? (
+            <Action
+              title="Retry Loading"
+              icon={Icon.ArrowClockwise}
+              onAction={refresh}
+            />
+          ) : (
+            create
+          )}
         </ActionPanel>
       }
     >
       <List.EmptyView
+        icon={
+          error
+            ? Icon.ExclamationMark
+            : items.length
+              ? Icon.MagnifyingGlass
+              : Icon.Keyboard
+        }
         title={
           error
             ? "Could Not Load Macros"
             : loading
-              ? "Loading Macros"
-              : "No Saved Macros"
+              ? "Loading Macros…"
+              : items.length
+                ? "No Matching Macros"
+                : "Create Your First Macro"
         }
         description={
           error
-            ? "Local metadata is unreadable. Restore it before making changes."
-            : "Create a named macro, then press Enter to type it into the app you opened this command from."
+            ? "Try loading again. If this continues, close and reopen the command."
+            : loading
+              ? "Your saved macros will appear here."
+              : items.length
+                ? "Try another name or clear the search."
+                : "Save text with a name, then press Enter to type it into the app you opened this command from."
         }
         actions={
           <ActionPanel>
             {error ? (
-              <Action title="Retry Loading" onAction={refresh} />
+              <Action
+                title="Retry Loading"
+                icon={Icon.ArrowClockwise}
+                onAction={refresh}
+              />
             ) : (
               create
             )}
@@ -217,58 +246,68 @@ export default function Entry() {
         <List.Item
           key={m.id}
           title={m.name}
+          icon={m.mask ? Icon.Lock : Icon.Keyboard}
           actions={
             <ActionPanel>
-              <Action
-                title="Type Macro"
-                onAction={() =>
-                  operate(async () => {
-                    if (!target)
-                      throw new Error(
-                        "Target unavailable. Reopen this command from the target app.",
-                      );
-                    const text = await library.text(m);
-                    const steps = parse(text, !m.interpret);
-                    await play(target, steps);
-                    await showToast({
-                      style: Toast.Style.Success,
-                      title: "Keystrokes sent",
-                      message: "Check the destination before continuing.",
-                    });
-                  })
-                }
-              />
-              <Action
-                title="Edit Macro"
-                onAction={() =>
-                  operate(async () => {
-                    const text = await library.text(m);
-                    push(<Editor macro={m} text={text} refresh={refresh} />);
-                  })
-                }
-                shortcut={Keyboard.Shortcut.Common.Edit}
-              />
-              {create}
-              <Action
-                title="Delete Macro"
-                style={Action.Style.Destructive}
-                onAction={() =>
-                  operate(async () => {
-                    if (
-                      await confirmAlert({
-                        title: "Delete this macro?",
-                        message:
-                          "This removes its saved text from the local library.",
-                        primaryAction: {
-                          title: "Delete",
-                          style: Alert.ActionStyle.Destructive,
-                        },
-                      })
-                    )
-                      await library.delete(m);
-                  })
-                }
-              />
+              <ActionPanel.Section>
+                <Action
+                  title="Type Macro"
+                  icon={Icon.Keyboard}
+                  onAction={() =>
+                    operate(async () => {
+                      if (!target)
+                        throw new Error(
+                          "Open the app and field you want to type into, then reopen this command.",
+                        );
+                      const text = await library.text(m);
+                      const steps = parse(text, !m.interpret);
+                      await play(target, steps);
+                      await showToast({
+                        style: Toast.Style.Success,
+                        title: "Macro Typed",
+                      });
+                    })
+                  }
+                />
+              </ActionPanel.Section>
+              <ActionPanel.Section>
+                <Action
+                  title="Edit Macro"
+                  icon={Icon.Pencil}
+                  onAction={() =>
+                    operate(async () => {
+                      const text = await library.text(m);
+                      push(<Editor macro={m} text={text} refresh={refresh} />);
+                    })
+                  }
+                  shortcut={Keyboard.Shortcut.Common.Edit}
+                />
+                {create}
+              </ActionPanel.Section>
+              <ActionPanel.Section>
+                <Action
+                  title="Delete Macro"
+                  icon={Icon.Trash}
+                  shortcut={Keyboard.Shortcut.Common.Remove}
+                  style={Action.Style.Destructive}
+                  onAction={() =>
+                    operate(async () => {
+                      if (
+                        await confirmAlert({
+                          title: "Delete this macro?",
+                          message:
+                            "This removes its saved text from the local library.",
+                          primaryAction: {
+                            title: "Delete",
+                            style: Alert.ActionStyle.Destructive,
+                          },
+                        })
+                      )
+                        await library.delete(m);
+                    })
+                  }
+                />
+              </ActionPanel.Section>
             </ActionPanel>
           }
         />
