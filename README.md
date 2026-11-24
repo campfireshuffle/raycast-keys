@@ -47,6 +47,6 @@ CI runs `npm run verify:source`: all deterministic tests, seeded fuzz, native al
 
 ## Distribution gates
 
-Store publication remains blocked until the manifest author passes Raycast account validation and native helper packaging is resolved. Raycast’s upstream CI may call `ray build` directly and bypass the npm native-build step. The distributed extension must include universal, executable helpers built from the included source. A local npm build does not establish Store readiness. A deliberate migration to the official Swift bridge or reviewer-approved packaging is still needed.
+Store publication remains blocked until the manifest author passes Raycast account validation and native helper packaging is resolved. Raycast’s upstream CI may call `ray build` directly and bypass the npm native-build step. The distributed extension must include universal, executable helpers built from the included source. A local npm build does not establish Store readiness. Store submission needs official Swift integration or reviewer-approved native packaging.
 
 Verify Intel execution, the minimum OS, installed helper permissions/signatures, and real Raycast flows before release. Publishing is a maintainer action after these gates are resolved.

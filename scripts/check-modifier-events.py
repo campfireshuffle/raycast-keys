@@ -1,4 +1,4 @@
-"""Production allocation/planning/emission seam; no posts. Calibrated legacy mutants."""
+"""Check production event handling without posting input; detect known broken variants."""
 import pathlib
 import subprocess
 import tempfile
