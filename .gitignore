@@ -1,0 +1,12 @@
+node_modules/
+assets/key-sender
+assets/mutation-lock
+dist/
+.converge/
+raycast-env.d.ts
+.DS_Store
+*.log
+.env
+.env.*
+.vscode/
+.idea/

@@ -1,0 +1,50 @@
+{
+  "name": "physical-key-macros",
+  "title": "Physical Key Macros",
+  "description": "Save and type US keyboard macros into the previously focused app without using the clipboard.",
+  "icon": "icon.png",
+  "author": "sarimabbas",
+  "license": "MIT",
+  "platforms": [
+    "macOS"
+  ],
+  "categories": [
+    "Productivity"
+  ],
+  "commands": [
+    {
+      "name": "type-macro",
+      "title": "Type Saved Macro",
+      "description": "Search saved macro names and type into the previously focused app",
+      "mode": "view"
+    }
+  ],
+  "scripts": {
+    "native": "bash scripts/build-native.sh",
+    "build": "npm run native && ray build",
+    "dev": "npm run native && ray develop",
+    "test": "npm run native && tsx --test tests/*.test.ts && assets/key-sender --self-test",
+    "verify:source": "npm test && python3 scripts/check-modifier-events.py && python3 scripts/check-saved-mutants.py && python3 scripts/check-mutants.py && npm run typecheck && npm run lint:source && npm run build && npm run check:boundary:mutants && npm run check:boundary",
+    "checks": "npm run verify:source && npm run validate:store",
+    "lint:source": "eslint src tests && prettier --check src tests",
+    "validate:store": "ray lint",
+    "check:boundary": "tsx tests/verification/playback-boundary/check.ts",
+    "check:boundary:mutants": "tsx tests/verification/playback-boundary/check.ts --mutants",
+    "typecheck": "tsc --noEmit",
+    "lint": "ray lint",
+    "publish": "npx @raycast/api@latest publish",
+    "format": "prettier --write src tests"
+  },
+  "dependencies": {
+    "@raycast/api": "^2.13.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "typescript": "^5.9.0",
+    "tsx": "^4.20.0",
+    "eslint": "^9.0.0",
+    "@raycast/eslint-config": "^2.0.0",
+    "prettier": "^3.0.0"
+  }
+}

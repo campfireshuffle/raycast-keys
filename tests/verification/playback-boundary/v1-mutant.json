@@ -1,0 +1,6 @@
+{
+  "pause": "    func pause(_ ms: Int) throws {\n        for _ in 0..<max(1, (ms + 9) / 10) {\n            guard focused() else { throw Failure.invalid }\n            Thread.sleep(forTimeInterval: 0.01)\n        }\n    }",
+  "deadline": 61,
+  "projection": "app.bundleId ?? \"\"",
+  "resolver": "NSRunningApplication.runningApplications(withBundleIdentifier: request.target).first"
+}
