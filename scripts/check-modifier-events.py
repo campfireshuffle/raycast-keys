@@ -199,7 +199,7 @@ return [KeyEvent(code: value.code, down: true, flags: value.flags), KeyEvent(cod
         result = subprocess.run([binary], capture_output=True, text=True)
         if mutant != 'none':
             assert result.returncode == 7 and 'EVENT ASSERTION FAILED' in result.stdout, result
-            print('DETECTED ' + mutant + ': production dispatch policy / modifier regression (not remote acceptance)')
+            print('DETECTED ' + mutant + ': production dispatch policy / modifier regression (not application acceptance)')
         else:
             assert result.returncode == 0, result.stdout + result.stderr
             print(result.stdout.strip())

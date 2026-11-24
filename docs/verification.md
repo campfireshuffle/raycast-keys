@@ -10,4 +10,4 @@
 
 Static source extraction guards intentionally fail when production shape changes. Remap them to the equivalent production seam rather than removing assertions. Keep the frozen mutant fixture unchanged.
 
-Not covered: real Raycast mounting, input masking across remounts, focus restoration, actual event delivery, permissions, Secure Input, remote acceptance, scheduler stalls, Intel execution, or minimum-OS execution. Manual acceptance must use harmless dummy text. Success indicates local events were sent, not destination receipt.
+Not covered: real Raycast mounting, input masking across remounts, focus restoration, actual event delivery, permissions, Secure Input, application acceptance, scheduler stalls, Intel execution, or minimum-OS execution. Manual acceptance must use harmless dummy text. Success indicates local events were sent, not destination receipt.
