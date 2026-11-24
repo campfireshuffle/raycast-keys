@@ -1,6 +1,6 @@
-# Physical Key Macros
+# Raycast Keys
 
-Save named text and type it into the app you opened Raycast from, without using the clipboard. Requires macOS 12+, Raycast, and a US/ABC keyboard layout.
+Save named text and keyboard macros, then type them into the focused app without using the clipboard. An independent extension for Raycast. Requires macOS 12+ and a US/ABC keyboard layout.
 
 ## Install
 

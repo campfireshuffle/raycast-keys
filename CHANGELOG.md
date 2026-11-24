@@ -1,4 +1,8 @@
-# Physical Key Macros Changelog
+# Raycast Keys Changelog
+
+## [Raycast Keys] - 2026-11-24
+
+- Use Raycast Keys as the extension name and standardize release download names.
 
 ## [Initial Release] - {PR_MERGE_DATE}
 
